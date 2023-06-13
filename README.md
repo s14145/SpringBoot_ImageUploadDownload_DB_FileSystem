@@ -23,3 +23,11 @@ The REST endpoint exposed by this application are:
 5. DELETE Image From DB : http://localhost:6065/api/v1/images/deleteFromDB/{fileName}
 6. DELETE Image From File System : http://localhost:6065/api/v1/images/deleteFromFileSystem/{fileName}
 
+Spring Boot Actuator Endpoints:
+1. Health : http://localhost:6065/actuator/health
+2. Metrics : http://localhost:6065/actuator/metrics
+3. Env : http://localhost:6065/actuator/env
+4. Beans : http://localhost:6065/actuator/beans
+5. Threaddump : http://localhost:6065/actuator/threaddump
+6. Heapdump : http://localhost:6065/actuator/headdump 
+
