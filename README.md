@@ -17,7 +17,9 @@ H2 Database URI: http://localhost:6065/h2-console
 
 The REST endpoint exposed by this application are:
 1. POST Upload Image To DB : http://localhost:6065/api/v1/images/uploadToDB
-2. GET Download Image From DB : http://localhost:6065/api/v1/images/downloadFromDB/{filename}
+2. GET Download Image From DB : http://localhost:6065/api/v1/images/downloadFromDB/{fileName}
 3. POST Upload Image To File System : http://localhost:6065/api/v1/images/uploadToFileSystem
-4. GET Download Image From File System : http://localhost:6065/api/v1/images/downloadFromFileSystem/{filename}
+4. GET Download Image From File System : http://localhost:6065/api/v1/images/downloadFromFileSystem/{fileName}
+5. DELETE Image From DB : http://localhost:6065/api/v1/images/deleteFromDB/{fileName}
+6. DELETE Image From File System : http://localhost:6065/api/v1/images/deleteFromFileSystem/{fileName}
 
