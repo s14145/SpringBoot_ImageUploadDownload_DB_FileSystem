@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository("FileDataRepository")
 public interface FileDataRepository extends JpaRepository<FileData, Long> {
     Optional<FileData> findByName(String fileName);
+
+    boolean existsByName(String fileName);
 }
