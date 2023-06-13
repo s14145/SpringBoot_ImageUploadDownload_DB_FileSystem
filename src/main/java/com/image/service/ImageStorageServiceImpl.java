@@ -3,7 +3,6 @@ package com.image.service;
 import com.image.dto.ResponseMessage;
 import com.image.entity.FileData;
 import com.image.entity.ImageData;
-import com.image.exception.ImageAlreadyExists;
 import com.image.exception.ImageAlreadyExistsException;
 import com.image.exception.ImageNotFoundException;
 import com.image.exception.SystemException;
