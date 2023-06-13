@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service("StorageServiceImpl")
@@ -49,11 +51,11 @@ public class ImageStorageServiceImpl implements ImageStorageService {
       }
 
       public byte[] downaloadImage(String fileName){
-          Optional<ImageData> dbImageData = imageDataRepository.findByName(fileName);
-          if(!dbImageData.isPresent()){
+          Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
+          if(!dbImage.isPresent()){
               throw new ImageNotFoundException("Image not found with: " + fileName + " in database.", HttpStatus.NOT_FOUND);
           }
-          byte[] images = ImageUtils.decompressImage(dbImageData.get().getImageData());
+          byte[] images = ImageUtils.decompressImage(dbImage.get().getImageData());
           return images;
       }
 
@@ -77,18 +79,44 @@ public class ImageStorageServiceImpl implements ImageStorageService {
       }
 
       public byte[] downloadImageFromFileSystem(String fileName) {
-          Optional<FileData> fileSystemFileData = fileDataRepository.findByName(fileName);
-          if (!fileSystemFileData.isPresent()) {
+          Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
+          if (!fileSystemImage.isPresent()) {
               throw new ImageNotFoundException("Image not found with " + fileName + " in file system.", HttpStatus.NOT_FOUND);
           }
-          String filePath = fileSystemFileData.get().getFilePath();
+          String filePath = fileSystemImage.get().getFilePath();
           byte[] images;
           try {
               images = Files.readAllBytes(new File(filePath).toPath());
           } catch (IOException e) {
-              log.error("Error while reading image from file system" + e.getMessage());
+              log.error("Error while reading image from file system: " + e.getMessage());
               throw new SystemException("Error while reading image from file system.", e);
           }
           return images;
+      }
+
+      public void deleteImageFromDB(String fileName){
+          Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
+          if(!dbImage.isPresent()){
+              throw new ImageNotFoundException("Image not found with: " + fileName + " in database.", HttpStatus.NOT_FOUND);
+          }
+          ImageData imageData = dbImage.get();
+          imageDataRepository.delete(imageData);
+      }
+
+      public void deleteImageFromFileSystem(String fileName){
+          Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
+          if(!fileSystemImage.isPresent()){
+              throw new ImageNotFoundException("Image not found with " + fileName + " in file system.", HttpStatus.NOT_FOUND);
+          }
+          FileData fileData = fileSystemImage.get();
+          fileDataRepository.delete(fileData);
+          String filePath = fileSystemImage.get().getFilePath();
+          Path fileToDeletePath = Paths.get(filePath);
+          try {
+              Files.delete(fileToDeletePath);
+          } catch (IOException e) {
+              log.error("Unable to delete image from file system: " + e.getMessage());
+              throw new SystemException("Unable to delete image from file system.", e);
+          }
       }
 }

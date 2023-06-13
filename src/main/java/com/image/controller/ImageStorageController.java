@@ -26,9 +26,9 @@ public class ImageStorageController {
         return new ResponseEntity<>(uploadedImageToDB, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/downloadFromDB/{filename}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
-    public ResponseEntity<?> downloadImageFromDB(@PathVariable String filename){
-        byte[] downloadImageFromDB = imageStorageService.downaloadImage(filename);
+    @GetMapping(value = "/downloadFromDB/{fileName}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public ResponseEntity<?> downloadImageFromDB(@PathVariable String fileName){
+        byte[] downloadImageFromDB = imageStorageService.downaloadImage(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/jpeg"))
                 .body(downloadImageFromDB);
@@ -40,11 +40,24 @@ public class ImageStorageController {
         return new ResponseEntity<>(uploadedImageToFileSystem, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/downloadFromFileSystem/{filename}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
-    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String filename){
-        byte[] downloadImageFromFileSystem = imageStorageService.downloadImageFromFileSystem(filename);
+    @GetMapping(value = "/downloadFromFileSystem/{fileName}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String fileName){
+        byte[] downloadImageFromFileSystem = imageStorageService.downloadImageFromFileSystem(fileName);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/jpeg"))
                 .body(downloadImageFromFileSystem);
+    }
+
+    @DeleteMapping("/deleteFromDB/{fileName}")
+    public ResponseEntity<Void> deleteImageFromDB(@PathVariable String fileName){
+        imageStorageService.deleteImageFromDB(fileName);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
+    @DeleteMapping("/deleteFromFileSystem/{fileName}")
+    public ResponseEntity<Void> deleteImageFromFileSystem(@PathVariable String fileName){
+        imageStorageService.deleteImageFromFileSystem(fileName);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

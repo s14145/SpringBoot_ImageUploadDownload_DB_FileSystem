@@ -15,4 +15,8 @@ public interface ImageStorageService {
     FileData uploadImageToFileSystem(MultipartFile multipartFile) throws IOException;
 
    byte[] downloadImageFromFileSystem(String fileName);
+
+    void deleteImageFromDB(String fileName);
+
+    void deleteImageFromFileSystem(String fileName);
 }
