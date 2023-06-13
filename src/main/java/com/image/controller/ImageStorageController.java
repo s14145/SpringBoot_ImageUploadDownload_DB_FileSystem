@@ -1,6 +1,7 @@
 package com.image.controller;
 
 
+import com.image.dto.ResponseMessage;
 import com.image.entity.FileData;
 import com.image.entity.ImageData;
 import com.image.service.ImageStorageService;
@@ -22,8 +23,8 @@ public class ImageStorageController {
 
     @PostMapping("/uploadToDB")
     public ResponseEntity<?> uploadImageToDB(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        ImageData uploadedImageToDB = imageStorageService.uploadImage(multipartFile);
-        return new ResponseEntity<>(uploadedImageToDB, HttpStatus.CREATED);
+        ResponseMessage responseMessage = imageStorageService.uploadImage(multipartFile);
+        return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/downloadFromDB/{fileName}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
@@ -36,8 +37,8 @@ public class ImageStorageController {
 
     @PostMapping("/uploadToFileSystem")
     public ResponseEntity<?> uploadImageToFileSystem(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        FileData uploadedImageToFileSystem = imageStorageService.uploadImageToFileSystem(multipartFile);
-        return new ResponseEntity<>(uploadedImageToFileSystem, HttpStatus.CREATED);
+        ResponseMessage responseMessage = imageStorageService.uploadImageToFileSystem(multipartFile);
+        return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/downloadFromFileSystem/{fileName}", consumes = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE}, produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})

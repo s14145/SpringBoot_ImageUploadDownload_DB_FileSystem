@@ -1,5 +1,6 @@
 package com.image.service;
 
+import com.image.dto.ResponseMessage;
 import com.image.entity.FileData;
 import com.image.entity.ImageData;
 import com.image.exception.ImageNotFoundException;
@@ -32,7 +33,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
     private static final String FOLDER_PATH = "/Users/sudhilgauchan/Desktop/IntellijProjects/images/";
 
-    public ImageData uploadImage(MultipartFile multipartFile){
+    public ResponseMessage uploadImage(MultipartFile multipartFile){
       if(multipartFile.isEmpty()){
           throw new RuntimeException("No File selected");
       }
@@ -47,7 +48,12 @@ public class ImageStorageServiceImpl implements ImageStorageService {
             log.error("Unable to upload image to database: " + e.getMessage());
             throw new SystemException("Unable to upload image to database.", e);
         }
-        return imageData;
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .imageName(imageData.getName())
+                .type(imageData.getType())
+                .message("Successfully uploaded image to database.")
+                .build();
+        return responseMessage;
       }
 
       public byte[] downaloadImage(String fileName){
@@ -59,7 +65,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
           return images;
       }
 
-      public FileData uploadImageToFileSystem(MultipartFile multipartFile){
+      public ResponseMessage uploadImageToFileSystem(MultipartFile multipartFile){
         if(multipartFile.isEmpty()){
               throw new RuntimeException("No File selected");
           }
@@ -75,7 +81,13 @@ public class ImageStorageServiceImpl implements ImageStorageService {
               log.error("Unable to upload image to file system: " + e.getMessage());
               throw new SystemException("Unable to upload image to file system.", e);
           }
-          return fileData;
+          ResponseMessage responseMessage = ResponseMessage.builder()
+                  .imageName(fileData.getName())
+                  .type(fileData.getType())
+                  .filePath(filePath)
+                  .message("Successfully uploaded image to file system.")
+                  .build();
+          return responseMessage;
       }
 
       public byte[] downloadImageFromFileSystem(String fileName) {
