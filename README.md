@@ -1,3 +1,9 @@
+![Generic badge](https://img.shields.io/badge/completion-90%25-green)
+![GitHub repo size](https://img.shields.io/github/repo-size/s14145/SpringBoot_ImageUploadDownload_DB_FileSystem)
+![GitHub last commit](https://img.shields.io/github/last-commit/s14145/SpringBoot_ImageUploadDownload_DB_FileSystem)
+![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/s14145/SpringBoot_ImageUploadDownload_DB_FileSystem)
+
+
 # Spring Boot Project for Image Upload Download to DB and File System
 
 This application starts on port 6065.
@@ -15,7 +21,7 @@ The technologies used in this application are:
 
 H2 Database URI: http://localhost:6065/h2-console
 
-The REST endpoint exposed by this application are:
+The REST Endpoints exposed by this application are:
 1. POST Upload Image To DB : http://localhost:6065/api/v1/images/uploadToDB
 2. GET Download Image From DB : http://localhost:6065/api/v1/images/downloadFromDB/{fileName}
 3. POST Upload Image To File System : http://localhost:6065/api/v1/images/uploadToFileSystem
