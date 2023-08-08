@@ -14,7 +14,7 @@
 	<name>SpringBoot_ImageUploadDownload_DB_FileSystem</name>
 	<description>Spring Boot Project for Image Upload Download to DB and File System</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>20</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
