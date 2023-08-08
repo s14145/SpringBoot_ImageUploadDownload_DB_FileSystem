@@ -2,8 +2,6 @@ package com.image.controller;
 
 
 import com.image.dto.ResponseMessage;
-import com.image.entity.FileData;
-import com.image.entity.ImageData;
 import com.image.service.ImageStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

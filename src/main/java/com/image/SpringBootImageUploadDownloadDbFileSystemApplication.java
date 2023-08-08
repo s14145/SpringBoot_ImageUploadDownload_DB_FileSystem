@@ -9,5 +9,4 @@ public class SpringBootImageUploadDownloadDbFileSystemApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootImageUploadDownloadDbFileSystemApplication.class, args);
 	}
-
 }

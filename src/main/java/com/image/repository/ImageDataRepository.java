@@ -12,5 +12,4 @@ public interface ImageDataRepository extends JpaRepository<ImageData, Long> {
 
     boolean existsByName(String fileName);
 
-
 }

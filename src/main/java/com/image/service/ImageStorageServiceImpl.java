@@ -37,7 +37,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     public ResponseMessage uploadImage(MultipartFile multipartFile){
         ResponseMessage responseMessage;
         if (imageDataRepository.existsByName(multipartFile.getOriginalFilename())) {
-            throw new ImageAlreadyExistsException("Image already exits in database", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ImageAlreadyExistsException("Image already exits in database", HttpStatus.CONFLICT);
         } else {
             ImageData imageData = null;
             try {
@@ -72,7 +72,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
           ResponseMessage responseMessage;
           if (fileDataRepository.existsByName(multipartFile.getOriginalFilename())) {
-              throw new ImageAlreadyExistsException("Image already exits in file system", HttpStatus.INTERNAL_SERVER_ERROR);
+              throw new ImageAlreadyExistsException("Image already exits in file system", HttpStatus.CONFLICT);
           } else {
               String filePath = FOLDER_PATH + multipartFile.getOriginalFilename();
               FileData fileData = fileDataRepository.save(FileData.builder()
