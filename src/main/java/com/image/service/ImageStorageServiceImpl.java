@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -34,7 +35,9 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
     private static final String FOLDER_PATH = "/Users/sudhilgauchan/Desktop/IntellijProjects/images/";
 
-    public ResponseMessage uploadImage(MultipartFile multipartFile){
+
+    @Transactional(readOnly = false)
+    public ResponseMessage uploadImage(MultipartFile multipartFile) {
         ResponseMessage responseMessage;
         if (imageDataRepository.existsByName(multipartFile.getOriginalFilename())) {
             throw new ImageAlreadyExistsException("Image already exits in database", HttpStatus.CONFLICT);
@@ -55,86 +58,91 @@ public class ImageStorageServiceImpl implements ImageStorageService {
                     .type(imageData.getType())
                     .message("Successfully uploaded image to database.")
                     .build();
-      }
+        }
         return responseMessage;
-      }
+    }
 
-      public byte[] downaloadImage(String fileName){
-          Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
-          if(!dbImage.isPresent()){
-              throw new ImageNotFoundException("Image not found with name " + fileName + " in database.", HttpStatus.NOT_FOUND);
-          }
-          byte[] images = ImageUtils.decompressImage(dbImage.get().getImageData());
-          return images;
-      }
+    @Transactional(readOnly = true)
+    public byte[] downaloadImage(String fileName) {
+        Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
+        if (!dbImage.isPresent()) {
+            throw new ImageNotFoundException("Image not found with name " + fileName + " in database.", HttpStatus.NOT_FOUND);
+        }
+        byte[] images = ImageUtils.decompressImage(dbImage.get().getImageData());
+        return images;
+    }
 
-      public ResponseMessage uploadImageToFileSystem(MultipartFile multipartFile){
+    @Transactional(readOnly = false)
+    public ResponseMessage uploadImageToFileSystem(MultipartFile multipartFile) {
 
-          ResponseMessage responseMessage;
-          if (fileDataRepository.existsByName(multipartFile.getOriginalFilename())) {
-              throw new ImageAlreadyExistsException("Image already exits in file system", HttpStatus.CONFLICT);
-          } else {
-              String filePath = FOLDER_PATH + multipartFile.getOriginalFilename();
-              FileData fileData = fileDataRepository.save(FileData.builder()
-                      .name(multipartFile.getOriginalFilename())
-                      .type(multipartFile.getContentType())
-                      .filePath(filePath)
-                      .build());
-              try {
-                  multipartFile.transferTo(new File(filePath));
-              } catch (IOException e) {
-                  log.error("Unable to upload image to file system: " + e.getMessage());
-                  throw new SystemException("Unable to upload image to file system.", e);
-              }
-              responseMessage = ResponseMessage.builder()
-                      .imageName(fileData.getName())
-                      .type(fileData.getType())
-                      .filePath(filePath)
-                      .message("Successfully uploaded image to file system.")
-                      .build();
-          }
-          return responseMessage;
-      }
+        ResponseMessage responseMessage;
+        if (fileDataRepository.existsByName(multipartFile.getOriginalFilename())) {
+            throw new ImageAlreadyExistsException("Image already exits in file system", HttpStatus.CONFLICT);
+        } else {
+            String filePath = FOLDER_PATH + multipartFile.getOriginalFilename();
+            FileData fileData = fileDataRepository.save(FileData.builder()
+                    .name(multipartFile.getOriginalFilename())
+                    .type(multipartFile.getContentType())
+                    .filePath(filePath)
+                    .build());
+            try {
+                multipartFile.transferTo(new File(filePath));
+            } catch (IOException e) {
+                log.error("Unable to upload image to file system: " + e.getMessage());
+                throw new SystemException("Unable to upload image to file system.", e);
+            }
+            responseMessage = ResponseMessage.builder()
+                    .imageName(fileData.getName())
+                    .type(fileData.getType())
+                    .filePath(filePath)
+                    .message("Successfully uploaded image to file system.")
+                    .build();
+        }
+        return responseMessage;
+    }
 
-      public byte[] downloadImageFromFileSystem(String fileName) {
-          Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
-          if (!fileSystemImage.isPresent()) {
-              throw new ImageNotFoundException("Image not found with name " + fileName + " in file system.", HttpStatus.NOT_FOUND);
-          }
-          String filePath = fileSystemImage.get().getFilePath();
-          byte[] images;
-          try {
-              images = Files.readAllBytes(new File(filePath).toPath());
-          } catch (IOException e) {
-              log.error("Error while reading image from file system: " + e.getMessage());
-              throw new SystemException("Error while reading image from file system.", e);
-          }
-          return images;
-      }
+    @Transactional(readOnly = true)
+    public byte[] downloadImageFromFileSystem(String fileName) {
+        Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
+        if (!fileSystemImage.isPresent()) {
+            throw new ImageNotFoundException("Image not found with name " + fileName + " in file system.", HttpStatus.NOT_FOUND);
+        }
+        String filePath = fileSystemImage.get().getFilePath();
+        byte[] images;
+        try {
+            images = Files.readAllBytes(new File(filePath).toPath());
+        } catch (IOException e) {
+            log.error("Error while reading image from file system: " + e.getMessage());
+            throw new SystemException("Error while reading image from file system.", e);
+        }
+        return images;
+    }
 
-      public void deleteImageFromDB(String fileName){
-          Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
-          if(!dbImage.isPresent()){
-              throw new ImageNotFoundException("Image not found with name " + fileName + " in database.", HttpStatus.NOT_FOUND);
-          }
-          ImageData imageData = dbImage.get();
-          imageDataRepository.delete(imageData);
-      }
+    @Transactional(readOnly = false)
+    public void deleteImageFromDB(String fileName) {
+        Optional<ImageData> dbImage = imageDataRepository.findByName(fileName);
+        if (!dbImage.isPresent()) {
+            throw new ImageNotFoundException("Image not found with name " + fileName + " in database.", HttpStatus.NOT_FOUND);
+        }
+        ImageData imageData = dbImage.get();
+        imageDataRepository.delete(imageData);
+    }
 
-      public void deleteImageFromFileSystem(String fileName){
-          Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
-          if(!fileSystemImage.isPresent()){
-              throw new ImageNotFoundException("Image not found with name " + fileName + " in file system.", HttpStatus.NOT_FOUND);
-          }
-          FileData fileData = fileSystemImage.get();
-          fileDataRepository.delete(fileData);
-          String filePath = fileSystemImage.get().getFilePath();
-          Path fileToDeletePath = Paths.get(filePath);
-          try {
-              Files.delete(fileToDeletePath);
-          } catch (IOException e) {
-              log.error("Unable to delete image from file system: " + e.getMessage());
-              throw new SystemException("Unable to delete image from file system.", e);
-          }
-      }
+    @Transactional(readOnly = false)
+    public void deleteImageFromFileSystem(String fileName) {
+        Optional<FileData> fileSystemImage = fileDataRepository.findByName(fileName);
+        if (!fileSystemImage.isPresent()) {
+            throw new ImageNotFoundException("Image not found with name " + fileName + " in file system.", HttpStatus.NOT_FOUND);
+        }
+        FileData fileData = fileSystemImage.get();
+        fileDataRepository.delete(fileData);
+        String filePath = fileSystemImage.get().getFilePath();
+        Path fileToDeletePath = Paths.get(filePath);
+        try {
+            Files.delete(fileToDeletePath);
+        } catch (IOException e) {
+            log.error("Unable to delete image from file system: " + e.getMessage());
+            throw new SystemException("Unable to delete image from file system.", e);
+        }
+    }
 }
