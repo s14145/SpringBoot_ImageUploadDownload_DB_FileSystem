@@ -17,9 +17,10 @@ The technologies used in this application are:
 5. Hibernate
 6. H2 Database
 7. Spring Boot Actuator
-8. Docker
-9. Docker Hub
-10. Github Actions for automating developer workflows (secrets used to login to docker hub are stored in this code repository "Settings" tab)
+8. Transaction Management
+9. Docker
+10. Docker Hub
+11. Github Actions for automating developer workflows (secrets used to login to docker hub are stored in this code repository "Settings" tab)
 
 
 H2 Database URI: http://localhost:6065/h2-console
